@@ -1,0 +1,41 @@
+﻿{%- comment -%}
+  ue-menu-modal.liquid  Variant picker modal (accessible)
+{%- endcomment -%}
+
+<div class="ue-modal-overlay" id="ue-modal-overlay" tabindex="-1"></div>
+<div class="ue-modal" id="ue-modal" role="dialog" aria-modal="true" aria-label="Product options" tabindex="-1">
+  <div class="ue-modal__inner">
+    <button class="ue-modal__close" id="ue-modal-close" type="button" aria-label="Close">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+
+    <div class="ue-modal__hero" id="ue-modal-hero">
+      <img class="ue-modal__img" id="ue-modal-img" src="" alt="" loading="lazy">
+    </div>
+
+    <div class="ue-modal__body">
+      <h2 class="ue-modal__title" id="ue-modal-title"></h2>
+      <p class="ue-modal__desc" id="ue-modal-desc"></p>
+      <p class="ue-modal__price" id="ue-modal-price"></p>
+
+      <div class="ue-modal__variants" id="ue-modal-variants">
+        {%- comment -%} Filled dynamically by JS {%- endcomment -%}
+      </div>
+
+      <div class="ue-modal__qty">
+        <label class="ue-modal__qty-label" for="ue-modal-qty-input">Quantité</label>
+        <div class="ue-modal__qty-ctrl">
+          <button class="ue-modal__qty-btn" type="button" data-action="modal-qty-minus" aria-label="Decrease quantity"></button>
+          <input class="ue-modal__qty-input" id="ue-modal-qty-input" type="number" value="1" min="1" max="99" readonly>
+          <button class="ue-modal__qty-btn" type="button" data-action="modal-qty-plus" aria-label="Increase quantity">+</button>
+        </div>
+      </div>
+
+      <button class="ue-modal__atc" id="ue-modal-atc" type="button">
+        <span class="ue-modal__atc-text">Ajouter</span>
+        <span class="ue-modal__atc-price" id="ue-modal-atc-price"></span>
+        <span class="ue-modal__atc-spinner ue-spinner" hidden></span>
+      </button>
+    </div>
+  </div>
+</div>

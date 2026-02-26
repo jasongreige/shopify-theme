@@ -1,0 +1,15 @@
+﻿{
+  "sections": {
+    "ue-menu": {
+      "type": "ue-menu",
+      "settings": {
+        "enable_sidebar_cart": true,
+        "enable_mobile_drawer": true,
+        "enable_sticky_nav": true,
+        "show_product_images": true,
+        "max_products": 50
+      }
+    }
+  },
+  "order": ["ue-menu"]
+}

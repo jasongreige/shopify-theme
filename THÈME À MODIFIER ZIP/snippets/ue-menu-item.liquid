@@ -1,0 +1,66 @@
+﻿{%- comment -%}
+  ue-menu-item.liquid  Single product card for the menu
+  Accepts: product (product object), show_image (boolean)
+{%- endcomment -%}
+
+{%- liquid
+  assign first_variant = product.selected_or_first_available_variant
+  assign has_multiple_variants = false
+  if product.variants.size > 1
+    assign has_multiple_variants = true
+  endif
+  assign is_sold_out = true
+  if first_variant.available
+    assign is_sold_out = false
+  endif
+-%}
+
+<article class="ue-item {% if is_sold_out %}ue-item--sold-out{% endif %}" data-product-id="{{ product.id }}">
+  <div class="ue-item__body">
+    <h3 class="ue-item__title">{{ product.title }}</h3>
+    {%- if product.description != blank -%}
+      <p class="ue-item__desc">{{ product.description | strip_html | truncate: 90 }}</p>
+    {%- endif -%}
+    <div class="ue-item__footer">
+      <span class="ue-item__price">
+        {%- if product.compare_at_price > product.price -%}
+          <s class="ue-item__price--compare">{{ product.compare_at_price | money }}</s>
+        {%- endif -%}
+        {{ product.price | money }}
+      </span>
+      {%- if is_sold_out -%}
+        <span class="ue-item__sold-out">Épuisé</span>
+      {%- elsif has_multiple_variants -%}
+        <button
+          type="button"
+          class="ue-item__add ue-item__add--variants"
+          aria-label="Choose options for {{ product.title | escape }}"
+          data-product-handle="{{ product.handle }}"
+          data-action="open-modal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      {%- else -%}
+        <button
+          type="button"
+          class="ue-item__add"
+          aria-label="Add {{ product.title | escape }} to cart"
+          data-variant-id="{{ first_variant.id }}"
+          data-action="quick-add">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      {%- endif -%}
+    </div>
+  </div>
+  {%- if show_image and product.featured_image != blank -%}
+    <div class="ue-item__img-wrap">
+      <img
+        class="ue-item__img"
+        src="{{ product.featured_image | image_url: width: 260 }}"
+        alt="{{ product.featured_image.alt | escape }}"
+        width="130"
+        height="130"
+        loading="lazy"
+      >
+    </div>
+  {%- endif -%}
+</article>

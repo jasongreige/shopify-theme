@@ -1,0 +1,26 @@
+﻿{%- comment -%}
+  ue-menu-cart.liquid  Cart contents (used in sidebar + drawer)
+  Accepts: context ('sidebar' or 'drawer')
+{%- endcomment -%}
+
+<div class="ue-cart" id="ue-cart-{{ context }}" data-cart-context="{{ context }}">
+  <div class="ue-cart__empty" id="ue-cart-empty-{{ context }}">
+    <svg class="ue-cart__empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    <p>Votre panier est vide</p>
+    <p class="ue-cart__empty-sub">Ajoutez des articles depuis le menu</p>
+  </div>
+
+  <div class="ue-cart__items" id="ue-cart-items-{{ context }}">
+    {%- comment -%} Cart items rendered by JS {%- endcomment -%}
+  </div>
+
+  <div class="ue-cart__footer" id="ue-cart-footer-{{ context }}">
+    <div class="ue-cart__subtotal">
+      <span>Sous-total</span>
+      <span class="ue-cart__subtotal-price" id="ue-cart-subtotal-{{ context }}">{{ cart.total_price | money }}</span>
+    </div>
+    <a href="/checkout" class="ue-cart__checkout" id="ue-cart-checkout-{{ context }}">
+      Passer la commande
+    </a>
+  </div>
+</div>

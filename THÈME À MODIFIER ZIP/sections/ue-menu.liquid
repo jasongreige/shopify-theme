@@ -1,0 +1,176 @@
+﻿{%- comment -%}
+  UE-MENU  Uber Eats / DoorDash-style food menu section
+  Renders category navigation + product cards + sidebar/drawer cart
+{%- endcomment -%}
+
+{{ 'ue-menu.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign collections_list = section.settings.collections
+  assign show_images = section.settings.show_product_images
+  assign max_products = section.settings.max_products
+  assign enable_sidebar = section.settings.enable_sidebar_cart
+  assign enable_drawer = section.settings.enable_mobile_drawer
+  assign enable_sticky = section.settings.enable_sticky_nav
+-%}
+
+<div id="ue-menu" class="ue-menu" data-section-id="{{ section.id }}">
+
+  {%- comment -%} ===== STICKY CATEGORY NAV ===== {%- endcomment -%}
+  {%- if enable_sticky -%}
+    <nav class="ue-cat-nav" id="ue-cat-nav" aria-label="Menu categories">
+      <div class="ue-cat-nav__inner">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'collection_group' -%}
+            {%- assign col = block.settings.collection -%}
+            {%- if col != blank -%}
+              <a href="#cat-{{ col.handle }}"
+                 class="ue-cat-chip"
+                 data-cat-link="{{ col.handle }}"
+                 aria-label="Jump to {{ col.title }}">
+                {{ col.title }}
+              </a>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </nav>
+  {%- endif -%}
+
+  <div class="ue-menu__layout {% if enable_sidebar %}ue-menu__layout--has-sidebar{% endif %}">
+
+    {%- comment -%} ===== MAIN PRODUCT AREA ===== {%- endcomment -%}
+    <div class="ue-menu__content">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'collection_group' -%}
+          {%- assign col = block.settings.collection -%}
+          {%- if col != blank -%}
+            <section class="ue-category" id="cat-{{ col.handle }}" data-cat-section="{{ col.handle }}" {{ block.shopify_attributes }}>
+              <h2 class="ue-category__title">{{ col.title }}</h2>
+              {%- if col.description != blank -%}
+                <p class="ue-category__desc">{{ col.description | strip_html | truncate: 120 }}</p>
+              {%- endif -%}
+              <div class="ue-category__grid">
+                {%- assign product_count = 0 -%}
+                {%- for product in col.products -%}
+                  {%- if product_count < max_products -%}
+                    {%- render 'ue-menu-item', product: product, show_image: show_images -%}
+                    {%- assign product_count = product_count | plus: 1 -%}
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            </section>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- if section.blocks.size == 0 -%}
+        <div class="ue-menu__empty">
+          <p>Open the Theme Editor and add collection blocks to build your menu.</p>
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} ===== DESKTOP SIDEBAR CART ===== {%- endcomment -%}
+    {%- if enable_sidebar -%}
+      <aside class="ue-sidebar-cart" id="ue-sidebar-cart" aria-label="Your order">
+        {%- render 'ue-menu-cart', context: 'sidebar' -%}
+      </aside>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} ===== MOBILE FLOATING CART BUTTON ===== {%- endcomment -%}
+  {%- if enable_drawer -%}
+    <button class="ue-fab" id="ue-fab" aria-label="View cart" type="button">
+      <span class="ue-fab__icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      </span>
+      <span class="ue-fab__text">Panier</span>
+      <span class="ue-fab__count" id="ue-fab-count">0</span>
+    </button>
+
+    {%- comment -%} ===== MOBILE DRAWER CART ===== {%- endcomment -%}
+    <div class="ue-drawer-overlay" id="ue-drawer-overlay"></div>
+    <div class="ue-drawer" id="ue-drawer" role="dialog" aria-modal="true" aria-label="Your cart">
+      <div class="ue-drawer__header">
+        <h2 class="ue-drawer__title">Votre commande</h2>
+        <button class="ue-drawer__close" id="ue-drawer-close" type="button" aria-label="Close cart">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="ue-drawer__body" id="ue-drawer-body">
+        {%- render 'ue-menu-cart', context: 'drawer' -%}
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} ===== VARIANT MODAL ===== {%- endcomment -%}
+  {%- render 'ue-menu-modal' -%}
+
+  {%- comment -%} ===== TOAST ===== {%- endcomment -%}
+  <div class="ue-toast" id="ue-toast" aria-live="polite"></div>
+</div>
+
+<script src="{{ 'ue-menu.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "UE Menu",
+  "tag": "section",
+  "class": "ue-menu-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_sidebar_cart",
+      "label": "Enable desktop sidebar cart",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_mobile_drawer",
+      "label": "Enable mobile drawer cart",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky_nav",
+      "label": "Enable sticky category navigation",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_images",
+      "label": "Show product images",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "Max products per category",
+      "min": 4,
+      "max": 100,
+      "step": 1,
+      "default": 50
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection_group",
+      "name": "Collection / Category",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "UE Menu",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}
